@@ -32,7 +32,10 @@
           let keyValStore = upgradeDB.createObjectStore('keyval');      // create simple key/value object store
           keyValStore.put('world', 'howdy');                            // add (value, key) to object store
         case 1:                                                         // no 'break' statement means all cases get checked
-          upgradeDB.createObjectStore('people', { keyPath: 'name' });   // name property of objects inside the store will be the key
+          upgradeDB.createObjectStore('people', { keyPath: 'name' });   // 'name' property of objects inside the store will be the key
+        case 2:
+          var peopleStore = upgradeDB.transaction.objectStore('people');    // transaction on the 'people' object store
+          peopleStore.createIndex('animal', 'favoriteAnimal');              // new index called animal that sorts by 'favorite animal' property
       }
     });
     
@@ -45,17 +48,6 @@
     })
     .then(val => {                                    // do something with that value
       console.log('The value of "howdy" is:', val);   // print function input to the console
-    });
-    
-    // transaction with getAll()
-    dbPromise.then(db => {
-      let tx = db.transaction('people');
-      let peopleStore = tx.objectStore('people');
-      
-      return peopleStore.getAll();                  // get all values from store
-    })
-    .then(people => {
-      console.log('People:', people);               // select console tab in dev tools to see the people objects
     });
     
     // transaction with put()
@@ -97,6 +89,18 @@
     })
     .then(() => {
       console.log('People added');
+    });
+    
+    // transaction with getAll()
+    dbPromise.then(db => {
+      let tx = db.transaction('people');
+      let peopleStore = tx.objectStore('people');
+      let animalIndex = peopleStore.index('animal');    // reference 'animal' index created in idb.open case 2
+      
+      return animalIndex.getAll();                      // get all values from animal index, sorted by favorite animal
+    })
+    .then(people => {
+      console.log('People:', people);                   // list 'people' objects in console
     });
       
   </script>
