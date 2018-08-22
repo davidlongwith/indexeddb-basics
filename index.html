@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>title goes here</title>
+  <style type="text/css">
+  
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <p>Howdy!</p>
+  </header>
+
+  <section>
+  
+  </section>
+
+  <script src="idb.js"></script>
+  <script>
+    
+    // create or remove object stores and indexes here only.
+    // .open() returns a promise that can be used later to get/set items in the database
+    let dbPromise = idb.open('test-db', 1, upgradeDB => {         // name, version, upgradeCallback
+      let keyValStore = upgradeDB.createObjectStore('keyval');    // create object store
+      keyValStore.put('world', 'howdy');                          // add value, key to object store
+    });
+    
+    // transaction with get()
+    dbPromise.then(db => {
+      let tx = db.transaction('keyval');              // select object store(s) for the transaction
+      let keyValStore = tx.objectStore('keyval');     // select which store to use
+      return keyValStore.get('howdy');                // get the value for this key
+    })
+    .then(val => {                                    // do something with that value
+      console.log('The value of "howdy" is:', val);   // print parameter to the console
+    });
+    
+    // transaction with put()
+    dbPromise.then(db => {
+      let tx = db.transaction('keyval', 'readwrite');   // specify it's a read/write transaction for specified store(s)
+      let keyValStore = tx.objectStore('keyval');       // use this store
+      keyValStore.put('bar', 'foo');                    // put this new value/key pair in the object store
+      return tx.complete;                               // 'complete' property is promise for transaction success/fail
+    })
+    .then(() => {                                       // all steps in transaction completed (otherwise all fail)
+      console.log('Added foo:bar to keyval');           // transaction success!
+    });
+      
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
