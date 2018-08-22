@@ -97,7 +97,7 @@
       let peopleStore = tx.objectStore('people');
       let animalIndex = peopleStore.index('animal');    // reference 'animal' index created in idb.open case 2
       
-      return animalIndex.getAll();                      // get all values from animal index, sorted by favorite animal
+      return animalIndex.getAll();                      // get all values from animal index, sorted by favorite animal (queries accepted too, ex. 'cat')
     })
     .then(people => {
       console.log('People:', people);                   // list 'people' objects in console
