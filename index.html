@@ -19,11 +19,12 @@
   
   </section>
 
+  <!-- https://github.com/jakearchibald/idb -->
   <script src="idb.js"></script>
   <script>
     
     // create or remove object stores and indexes here only.
-    // .open() returns a promise that can be used later to get/set items in the database
+    // .open() returns a promise that can be used later to get/put items in the database
     let dbPromise = idb.open('test-db', 1, upgradeDB => {               // (name, version, upgradeCallback)
       switch(upgradeDB.oldVersion) {                                    // oldVersion property indicates what version the browser already has
         case 0:                                                         // check for this store, skip if already exists
@@ -38,10 +39,22 @@
     dbPromise.then(db => {
       let tx = db.transaction('keyval');              // setup transaction with these store(s)
       let keyValStore = tx.objectStore('keyval');     // select which store to use
+      
       return keyValStore.get('howdy');                // get the value for this key
     })
     .then(val => {                                    // do something with that value
-      console.log('The value of "howdy" is:', val);   // print parameter to the console
+      console.log('The value of "howdy" is:', val);   // print function input to the console
+    });
+    
+    // transaction with getAll()
+    dbPromise.then(db => {
+      let tx = db.transaction('people');
+      let peopleStore = tx.objectStore('people');
+      
+      return peopleStore.getAll();                  // get all values from store
+    })
+    .then(people => {
+      console.log('People:', people);               // select console tab in dev tools to see the people objects
     });
     
     // transaction with put()
@@ -49,6 +62,7 @@
       let tx = db.transaction('keyval', 'readwrite');   // specify it's a read/write transaction for specified store(s)
       let keyValStore = tx.objectStore('keyval');
       keyValStore.put('bar', 'foo');                    // put this new value/key pair in the object store
+      
       return tx.complete;                               // 'complete' property is promise for transaction success/fail
     })
     .then(() => {                                       // all steps in transaction completed (otherwise all fail)
