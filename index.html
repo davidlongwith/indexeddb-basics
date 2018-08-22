@@ -36,7 +36,7 @@
     
     // transaction with get()
     dbPromise.then(db => {
-      let tx = db.transaction('keyval');              // select object store(s) for the transaction
+      let tx = db.transaction('keyval');              // setup transaction with these store(s)
       let keyValStore = tx.objectStore('keyval');     // select which store to use
       return keyValStore.get('howdy');                // get the value for this key
     })
@@ -47,12 +47,41 @@
     // transaction with put()
     dbPromise.then(db => {
       let tx = db.transaction('keyval', 'readwrite');   // specify it's a read/write transaction for specified store(s)
-      let keyValStore = tx.objectStore('keyval');       // use this store
+      let keyValStore = tx.objectStore('keyval');
       keyValStore.put('bar', 'foo');                    // put this new value/key pair in the object store
       return tx.complete;                               // 'complete' property is promise for transaction success/fail
     })
     .then(() => {                                       // all steps in transaction completed (otherwise all fail)
       console.log('Added foo:bar to keyval');           // transaction success!
+    });
+    
+    // transaction with put() and objects
+    dbPromise.then(db => {
+      let tx = db.transaction('people', 'readwrite');   
+      let peopleStore = tx.objectStore('people');
+      
+      peopleStore.put({                                 // name property is the key (set on store creation)
+        name: 'Sam Mundez',
+        age: 25,
+        favoriteAnimal: 'dog'
+      });
+      
+      peopleStore.put({
+        name: 'John Smith',
+        age: 33,
+        favoriteAnimal: 'cat'
+      });
+      
+      peopleStore.put({
+        name: 'Jane Doe',
+        age: 21,
+        favoriteAnimal: 'dog'
+      });
+      
+      return tx.complete;
+    })
+    .then(() => {
+      console.log('People added');
     });
       
   </script>
