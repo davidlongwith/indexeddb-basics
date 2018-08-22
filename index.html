@@ -26,13 +26,13 @@
     
     // create or remove object stores and indexes here only.
     // .open() returns a promise that can be used later to get/put items in the database
-    let dbPromise = idb.open('test-db', 1, upgradeDB => {               // (name, version, upgradeCallback)
-      switch(upgradeDB.oldVersion) {                                    // oldVersion property indicates what version the browser already has
-        case 0:                                                         // check for this store, skip if already up-to-date
-          let keyValStore = upgradeDB.createObjectStore('keyval');      // create simple key/value object store
-          keyValStore.put('world', 'howdy');                            // add (value, key) to object store
-        case 1:                                                         // no 'break' statement means all cases get checked
-          upgradeDB.createObjectStore('people', { keyPath: 'name' });   // 'name' property of objects inside the store will be the key
+    let dbPromise = idb.open('test-db', 1, upgradeDB => {                   // (name, version, upgradeCallback)
+      switch(upgradeDB.oldVersion) {                                        // oldVersion property indicates what version the browser already has
+        case 0:                                                             // check for this store, skip if already up-to-date
+          let keyValStore = upgradeDB.createObjectStore('keyval');          // create simple key/value object store
+          keyValStore.put('world', 'howdy');                                // add (value, key) to object store
+        case 1:                                                             // no 'break' statement means all cases get checked
+          upgradeDB.createObjectStore('people', { keyPath: 'name' });       // 'name' property of objects inside the store will be the key
         case 2:
           var peopleStore = upgradeDB.transaction.objectStore('people');    // transaction on the 'people' object store
           peopleStore.createIndex('animal', 'favoriteAnimal');              // new index called animal that sorts by 'favorite animal' property
@@ -100,7 +100,7 @@
       return animalIndex.getAll();                      // get all values from animal index, sorted by favorite animal (queries accepted too, ex. 'cat')
     })
     .then(people => {
-      console.log('People:', people);                   // list 'people' objects in console
+      console.log('People:', people);                   // list returned people objects in console
     });
       
   </script>
