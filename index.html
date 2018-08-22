@@ -19,6 +19,7 @@
   
   </section>
 
+  <!-- IndexedDB Promised -->
   <!-- https://github.com/jakearchibald/idb -->
   <script src="idb.js"></script>
   <script>
@@ -27,7 +28,7 @@
     // .open() returns a promise that can be used later to get/put items in the database
     let dbPromise = idb.open('test-db', 1, upgradeDB => {               // (name, version, upgradeCallback)
       switch(upgradeDB.oldVersion) {                                    // oldVersion property indicates what version the browser already has
-        case 0:                                                         // check for this store, skip if already exists
+        case 0:                                                         // check for this store, skip if already up-to-date
           let keyValStore = upgradeDB.createObjectStore('keyval');      // create simple key/value object store
           keyValStore.put('world', 'howdy');                            // add (value, key) to object store
         case 1:                                                         // no 'break' statement means all cases get checked
