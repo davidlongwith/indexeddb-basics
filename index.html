@@ -95,7 +95,7 @@
       console.log('People added');
     });
     
-    // transaction with getAll()
+    // transaction with getAll() sorted by favorite animal
     dbPromise.then(db => {
       let tx = db.transaction('people');
       let peopleStore = tx.objectStore('people');
@@ -107,16 +107,21 @@
       console.log('People:', people);                   // list returned people objects in console
     });
     
-    // transaction - sort by age
+    // transaction - cursor one by one, sorted by age index
     dbPromise.then(db => {
       let tx = db.transaction('people');
       let peopleStore = tx.objectStore('people');
       let ageIndex = peopleStore.index('age');
       
-      return ageIndex.getAll();
+      return ageIndex.openCursor();                     // open a cursor at the first item in the index
     })
-    .then(people => {
-      console.log('Sorted by age:', people);
+    .then(function logPerson(cursor) {
+      if (!cursor) return;                              // if none remaining it returns undefined; exit here
+      console.log('Cursored at:', cursor.value.name);
+      return cursor.continue().then(logPerson);         // "continue()" cursor to the next item and run logPerson() again (sets up a-sync loop)
+    })
+    .then(() => {                                       // once cursor looping returns undefined it is at the end of the list
+      console.log('Done cursoring');
     });
       
   </script>
