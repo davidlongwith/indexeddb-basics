@@ -115,9 +115,15 @@
       
       return ageIndex.openCursor();                     // open a cursor at the first item in the index
     })
+    .then(cursor => {                                   // optional: advance cursor ahead (#) spots in the list
+      if (!cursor) return;
+      return cursor.advance(2);
+    })
     .then(function logPerson(cursor) {
       if (!cursor) return;                              // if none remaining it returns undefined; exit here
       console.log('Cursored at:', cursor.value.name);
+      // cursor.update(newValue)                        // optional
+      // cursor.delete()                                // optional
       return cursor.continue().then(logPerson);         // "continue()" cursor to the next item and run logPerson() again (sets up a-sync loop)
     })
     .then(() => {                                       // once cursor looping returns undefined it is at the end of the list
