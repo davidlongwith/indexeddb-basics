@@ -24,7 +24,8 @@
   <script src="idb.js"></script>
   <script>
     
-    // create or remove object stores and indexes here only.
+    // ---Upgrade Function---
+    // *create or remove object stores and indexes here only.
     // .open() returns a promise that can be used later to get/put items in the database
     let dbPromise = idb.open('test-db', 1, upgradeDB => {                   // (name, version, upgradeCallback)
       switch(upgradeDB.oldVersion) {                                        // oldVersion property indicates what version the browser already has
@@ -34,8 +35,11 @@
         case 1:                                                             // no 'break' statement means all cases get checked
           upgradeDB.createObjectStore('people', { keyPath: 'name' });       // 'name' property of objects inside the store will be the key
         case 2:
-          var peopleStore = upgradeDB.transaction.objectStore('people');    // transaction on the 'people' object store
+          let peopleStore = upgradeDB.transaction.objectStore('people');    // transaction on the 'people' object store
           peopleStore.createIndex('animal', 'favoriteAnimal');              // new index called animal that sorts by 'favorite animal' property
+        case 3:
+          peopleStore = upgradeDB.transaction.objectStore('people');
+          peopleStore.createIndex('age', 'age');
       }
     });
     
@@ -101,6 +105,18 @@
     })
     .then(people => {
       console.log('People:', people);                   // list returned people objects in console
+    });
+    
+    // transaction - sort by age
+    dbPromise.then(db => {
+      let tx = db.transaction('people');
+      let peopleStore = tx.objectStore('people');
+      let ageIndex = peopleStore.index('age');
+      
+      return ageIndex.getAll();
+    })
+    .then(people => {
+      console.log('Sorted by age:', people);
     });
       
   </script>
