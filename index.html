@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>title goes here</title>
+  <title>IndexedDB Basics</title>
   <style type="text/css">
   
   </style>
@@ -16,7 +16,12 @@
   </header>
 
   <section>
-  
+    <div>
+      <p>IndexedDB Basics</p>
+      <p>Based on Udacity's Mobile Web Specialist Nanodegree lessons</p>
+      <p>Uses IndexedDB Promised for promise support</br>
+      https://github.com/jakearchibald/idb</p>
+    </div>
   </section>
 
   <!-- IndexedDB Promised -->
@@ -24,9 +29,11 @@
   <script src="idb.js"></script>
   <script>
     
-    // ---Upgrade Function---
-    // *create or remove object stores and indexes here only.
-    // .open() returns a promise that can be used later to get/put items in the database
+    /**
+     * ---IndexedDB Upgrade Function---
+     * Create or remove object stores and indexes here.
+     * .open() returns a promise that can be used later to get/put items in the database
+     */
     let dbPromise = idb.open('test-db', 1, upgradeDB => {                   // (name, version, upgradeCallback)
       switch(upgradeDB.oldVersion) {                                        // oldVersion property indicates what version the browser already has
         case 0:                                                             // check for this store, skip if already up-to-date
@@ -51,7 +58,7 @@
       return keyValStore.get('howdy');                // get the value for this key
     })
     .then(val => {                                    // do something with that value
-      console.log('The value of "howdy" is:', val);   // print function input to the console
+      console.log('The value of "howdy" is:', val);   // log promise value/content to the console
     });
     
     // transaction with put()
@@ -60,9 +67,9 @@
       let keyValStore = tx.objectStore('keyval');
       keyValStore.put('bar', 'foo');                    // put this new value/key pair in the object store
       
-      return tx.complete;                               // 'complete' property is promise for transaction success/fail
+      return tx.complete;                               // all steps in transaction 'completed', safe to proceed (otherwise all fail)
     })
-    .then(() => {                                       // all steps in transaction completed (otherwise all fail)
+    .then(() => {                                       
       console.log('Added foo:bar to keyval');           // transaction success!
     });
     
@@ -120,7 +127,7 @@
       return cursor.advance(2);
     })
     .then(function logPerson(cursor) {
-      if (!cursor) return;                              // if none remaining it returns undefined; exit here
+      if (!cursor) return;                              // if none remaining it returns undefined; return promise
       console.log('Cursored at:', cursor.value.name);
       // cursor.update(newValue)                        // optional
       // cursor.delete()                                // optional
